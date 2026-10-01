@@ -1,0 +1,7 @@
+streamlit
+pymupdf
+supabase
+python-dotenv
+pandas
+pytesseract
+Pillow
