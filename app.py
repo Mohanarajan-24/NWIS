@@ -243,20 +243,23 @@ if uploaded_file:
 
         ui.section("🧠 3. NLP Extracted Structured Data")
 
-        display_data = pd.DataFrame(
-            list(data.items()),
-            columns=[
-                "Field",
-                "Extracted Value"
-            ]
-        )
+     display_data = pd.DataFrame(
+    list(data.items()),
+    columns=[
+        "Field",
+        "Extracted Value"
+    ]
+)
 
-        st.dataframe(
-            display_data,
-            use_container_width=True,
-            hide_index=True
-        )
+# Convert extracted values to text so Streamlit
+# can safely display mixed numeric/text values
+display_data["Extracted Value"] = display_data["Extracted Value"].astype(str)
 
+st.dataframe(
+    display_data,
+    use_container_width=True,
+    hide_index=True
+)
 
 # ============================================================
 # SECTION 4 - SUPABASE DATABASE
