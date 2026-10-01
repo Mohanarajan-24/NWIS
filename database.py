@@ -1,18 +1,22 @@
 import os
-
+import streamlit as st
 from supabase import create_client
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
-
+# Get credentials from Streamlit Cloud Secrets
+# Fall back to .env when running locally
+try:
+    SUPABASE_URL = st.secrets["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+except Exception:
+    SUPABASE_URL = os.getenv("SUPABASE_URL")
+    SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError(
-        "SUPABASE_URL and SUPABASE_KEY are missing from .env"
+        "SUPABASE_URL and SUPABASE_KEY are missing"
     )
 
 
