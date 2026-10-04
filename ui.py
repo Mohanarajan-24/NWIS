@@ -79,6 +79,25 @@ h1,h2,h3{font-family:'IBM Plex Sans Condensed',sans-serif;letter-spacing:-.01em}
 [data-testid="stExpander"]{background:#fff;border:1px solid var(--line);border-radius:6px}
 [data-testid="stStatus"]{background:#fff;border-radius:6px}
 hr{border-color:var(--line)!important}
+/* ---- theme-proof overrides: readable even if the browser/OS forces dark mode ---- */
+.stApp,.stApp p,.stApp label,.stApp li,.stApp h1,.stApp h2,.stApp h3,.stApp h4{color:var(--ink)}
+.hero h1,.hero p{color:#fff!important}.hero p{color:#D7E3F0!important}
+.btn.p,.btn.s{color:#fff!important}
+[data-testid="stSidebar"] *{color:#E6EEF7!important}
+[data-testid="stMetricLabel"],[data-testid="stMetricLabel"] *{color:#486581!important}
+[data-testid="stMetricValue"],[data-testid="stMetricValue"] *{color:var(--ink)!important}
+[data-testid="stBaseButton-secondary"],.stButton>button[kind="secondary"]{background:#fff!important;color:var(--ink)!important;border:2px solid var(--flare)!important}
+[data-testid="stBaseButton-secondary"] *{color:var(--ink)!important}
+[data-testid="stBaseButton-secondary"]:hover{background:#FDF3EF!important}
+[data-testid="stBaseButton-primary"]{background:var(--flare)!important;border:0!important}
+[data-testid="stBaseButton-primary"] *{color:#fff!important}
+[data-testid="stFileUploader"] label,[data-testid="stFileUploader"] small,[data-testid="stFileUploader"] span{color:var(--ink)!important}
+[data-testid="stFileUploader"] section{background:#fff!important}
+[data-testid="stFileUploader"] button{background:#fff!important;color:var(--ink)!important;border:1px solid #B8C7D9!important}
+[data-testid="stExpander"] summary,[data-testid="stExpander"] summary *{color:var(--ink)!important}
+[data-testid="stStatus"] *,[data-testid="stExpander"] pre,[data-testid="stText"]{color:var(--ink)!important}
+[data-testid="stAlertContainer"] p{color:#0A2342!important}
+
 /* sidebar */
 [data-testid="stSidebar"]{background:var(--ink)}
 [data-testid="stSidebar"] *{color:#E6EEF7}
@@ -91,6 +110,15 @@ hr{border-color:var(--line)!important}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 """.replace("HERO", HERO_PHOTO or _HERO_URL).replace("CONTOUR", _CONTOUR)
+
+
+def html(markup):
+    """Render an HTML snippet safely.
+    Streamlit's Markdown turns indented lines that follow a blank line into a code block,
+    which is what printed raw <p> / <div> tags on the page. Stripping indentation and
+    blank lines keeps the whole snippet one HTML block."""
+    lines = [ln.strip() for ln in markup.splitlines() if ln.strip()]
+    st.markdown("\n".join(lines), unsafe_allow_html=True)
 
 
 def inject_css():
