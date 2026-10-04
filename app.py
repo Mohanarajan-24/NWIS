@@ -41,17 +41,81 @@ ui.sidebar_workflow()
 
 ui.section("📄 1. Upload WCR Report")
 
-uploaded_file = st.file_uploader(
-    "Upload a Well Completion Report (PDF)",
-    type=["pdf"]
-)
+# ============================================================
+# WCR INPUT OPTIONS
+# ============================================================
+
+col_upload, col_demo = st.columns(2)
+
+with col_upload:
+
+    uploaded_file = st.file_uploader(
+        "Upload a Well Completion Report (PDF)",
+        type=["pdf"]
+    )
 
 
+with col_demo:
+
+    st.markdown("### 🚀 Quick Demo")
+
+    demo_button = st.button(
+        "🚀 Run Demo with Sample WCR",
+        type="secondary"
+    )
+
+
+# ============================================================
+# SELECT INPUT FILE
+# ============================================================
+
+file_name = None
+file_bytes = None
+
+
+# Normal user upload
 if uploaded_file:
 
+    file_name = uploaded_file.name
+    file_bytes = uploaded_file.getvalue()
+
     st.success(
-        f"File uploaded: {uploaded_file.name}"
+        f"File uploaded: {file_name}"
     )
+
+
+# Demo sample from GitHub
+elif demo_button:
+
+    sample_path = "sample_WCR.pdf"
+
+    if os.path.exists(sample_path):
+
+        with open(
+            sample_path,
+            "rb"
+        ) as f:
+
+            file_bytes = f.read()
+
+        file_name = "sample_WCR.pdf"
+
+        st.success(
+            "✅ Sample WCR loaded from the project"
+        )
+
+    else:
+
+        st.error(
+            "❌ sample_WCR.pdf was not found in the repository."
+        )
+
+
+# ============================================================
+# PROCESS SELECTED FILE
+# ============================================================
+
+if file_bytes is not None:
 
     # --------------------------------------------------------
     # PROCESS BUTTON
