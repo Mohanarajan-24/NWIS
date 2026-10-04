@@ -36,8 +36,7 @@ ui.sidebar_workflow()
 
 ui.section("📄 1. Upload WCR Report")
 
-st.markdown(
-    """
+ui.html("""
     <div style="
         color:#486581;
         font-size:15px;
@@ -46,9 +45,7 @@ st.markdown(
         Upload a Well Completion Report or run the built-in
         demonstration using the sample WCR.
     </div>
-    """,
-    unsafe_allow_html=True
-)
+    """)
 
 
 # ============================================================
@@ -80,8 +77,7 @@ with col_demo:
         "### 🚀 Quick Demo"
     )
 
-    st.markdown(
-        """
+    ui.html("""
         <div style="
             color:#486581;
             font-size:14px;
@@ -90,9 +86,7 @@ with col_demo:
             No file required. Use the sample WCR
             bundled with the project.
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """)
 
     demo_button = st.button(
         "🚀 Run Demo with Sample WCR",
@@ -167,8 +161,7 @@ if file_bytes is not None:
         "### ⚙️ Processing Pipeline"
     )
 
-    st.markdown(
-        """
+    ui.html("""
         <div style="
             display:flex;
             align-items:center;
@@ -231,9 +224,7 @@ if file_bytes is not None:
             </div>
 
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """)
 
 
     # ========================================================
@@ -667,8 +658,7 @@ module_col1, module_col2 = st.columns(
 
 with module_col1:
 
-    st.markdown(
-        """
+    ui.html("""
         <div style="
             background:#FFFFFF;
             padding:22px;
@@ -702,15 +692,12 @@ with module_col1:
                 Displays well records and drilling KPIs.
             </p>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """)
 
 
 with module_col2:
 
-    st.markdown(
-        """
+    ui.html("""
         <div style="
             background:#FFFFFF;
             padding:22px;
@@ -751,9 +738,7 @@ with module_col2:
                 map-based decision support.
             </p>
         </div>
-        """,
-        unsafe_allow_html=True
-    )
+        """)
 
 
 # ============================================================
