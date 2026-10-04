@@ -22,152 +22,12 @@ st.set_page_config(
 
 
 # ============================================================
-# CUSTOM VISIBILITY / READABILITY CSS
-# ============================================================
-
-st.markdown(
-    """
-    <style>
-
-    /* General text */
-    .stMarkdown,
-    .stText,
-    label,
-    p {
-        color: #102A43;
-    }
-
-    /* Upload box */
-    [data-testid="stFileUploader"] {
-        background: rgba(255,255,255,0.92);
-        border-radius: 14px;
-        padding: 10px;
-    }
-
-    [data-testid="stFileUploader"] label {
-        color: #102A43 !important;
-    }
-
-    [data-testid="stFileUploader"] section {
-        background: #ffffff !important;
-    }
-
-    [data-testid="stFileUploader"] button {
-        color: #102A43 !important;
-        background: #ffffff !important;
-        border: 1px solid #B8C7D9 !important;
-    }
-
-    /* Buttons */
-    .stButton > button {
-        border-radius: 10px;
-        min-height: 44px;
-        font-weight: 700;
-    }
-
-    /* Secondary buttons */
-    .stButton > button[kind="secondary"] {
-        color: #102A43 !important;
-        background: #ffffff !important;
-        border: 2px solid #F15A29 !important;
-    }
-
-    /* Primary buttons */
-    .stButton > button[kind="primary"] {
-        color: #ffffff !important;
-        background: #F15A29 !important;
-        border: none !important;
-    }
-
-    /* Metric cards */
-    [data-testid="stMetric"] {
-        background: rgba(255,255,255,0.94);
-        border-radius: 14px;
-        padding: 18px;
-        border-top: 4px solid #0F9EA8;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-    }
-
-    [data-testid="stMetricLabel"] {
-        color: #486581 !important;
-    }
-
-    [data-testid="stMetricValue"] {
-        color: #102A43 !important;
-    }
-
-    /* Dataframes */
-    [data-testid="stDataFrame"] {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    /* Expanders */
-    [data-testid="stExpander"] {
-        border-radius: 12px;
-        border: 1px solid #D9E2EC;
-    }
-
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-
-# ============================================================
-# EXISTING NWIS UI
+# NWIS UI (theme, navbar, hero, sidebar)
 # ============================================================
 
 ui.inject_css()
 ui.header()
 ui.sidebar_workflow()
-
-
-# ============================================================
-# HERO / INTRODUCTION
-# ============================================================
-
-st.markdown(
-    """
-    <div style="
-        background: linear-gradient(135deg, #0B2545, #123C69);
-        padding: 28px 32px;
-        border-radius: 18px;
-        margin-bottom: 24px;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    ">
-        <div style="
-            color: #F15A29;
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 8px;
-        ">
-            OIL & GAS • DRILLING INTELLIGENCE
-        </div>
-
-        <div style="
-            color: white;
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 8px;
-        ">
-            Nearby Wells Intelligence System
-        </div>
-
-        <div style="
-            color: #D9EAF7;
-            font-size: 16px;
-            line-height: 1.6;
-        ">
-            Transforming unstructured WCR / DDR reports into
-            structured drilling intelligence for faster and
-            data-driven decision support.
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
 
 
 # ============================================================
@@ -602,182 +462,191 @@ if file_bytes is not None:
 
 # ============================================================
 # SECTION 4 - SUPABASE DATABASE
+# (shown only after a WCR has been processed and stored)
 # ============================================================
 
-ui.section(
-    "🗄️ 4. Supabase WCR Database"
-)
+if st.session_state.get("wcr_processed"):
 
-try:
+    ui.section(
+        "🗄️ 4. Supabase WCR Database"
+    )
 
-    db_data = get_all_wcr_data()
+    try:
 
-    if db_data:
+        db_data = get_all_wcr_data()
 
-        db_df = pd.DataFrame(
-            db_data
-        )
+        if db_data:
 
-
-        # ====================================================
-        # KPI CARDS
-        # ====================================================
-
-        total_records = len(
-            db_df
-        )
-
-
-        if "well_id" in db_df.columns:
-
-            total_wells = db_df[
-                "well_id"
-            ].nunique()
-
-        else:
-
-            total_wells = total_records
-
-
-        if "total_depth" in db_df.columns:
-
-            depth_values = pd.to_numeric(
-                db_df["total_depth"],
-                errors="coerce"
-            )
-
-            avg_depth = depth_values.mean()
-
-        else:
-
-            avg_depth = None
-
-
-        if "rop" in db_df.columns:
-
-            rop_values = pd.to_numeric(
-                db_df["rop"],
-                errors="coerce"
-            )
-
-            avg_rop = rop_values.mean()
-
-        else:
-
-            avg_rop = None
-
-
-        col1, col2, col3, col4 = st.columns(
-            4,
-            gap="medium"
-        )
-
-
-        with col1:
-
-            st.metric(
-                "📄 WCR Records",
-                total_records
+            db_df = pd.DataFrame(
+                db_data
             )
 
 
-        with col2:
+            # ================================================
+            # KPI CARDS
+            # ================================================
 
-            st.metric(
-                "🛢️ Unique Wells",
-                total_wells
+            total_records = len(
+                db_df
             )
 
 
-        with col3:
+            if "well_id" in db_df.columns:
 
-            st.metric(
-                "📏 Avg Depth",
-                f"{avg_depth:.1f}"
-                if pd.notna(avg_depth)
-                else "N/A"
+                total_wells = db_df[
+                    "well_id"
+                ].nunique()
+
+            else:
+
+                total_wells = total_records
+
+
+            if "total_depth" in db_df.columns:
+
+                depth_values = pd.to_numeric(
+                    db_df["total_depth"],
+                    errors="coerce"
+                )
+
+                avg_depth = depth_values.mean()
+
+            else:
+
+                avg_depth = None
+
+
+            if "rop" in db_df.columns:
+
+                rop_values = pd.to_numeric(
+                    db_df["rop"],
+                    errors="coerce"
+                )
+
+                avg_rop = rop_values.mean()
+
+            else:
+
+                avg_rop = None
+
+
+            col1, col2, col3, col4 = st.columns(
+                4,
+                gap="medium"
             )
 
 
-        with col4:
+            with col1:
 
-            st.metric(
-                "⚙️ Avg ROP",
-                f"{avg_rop:.1f}"
-                if pd.notna(avg_rop)
-                else "N/A"
+                st.metric(
+                    "📄 WCR Records",
+                    total_records
+                )
+
+
+            with col2:
+
+                st.metric(
+                    "🛢️ Unique Wells",
+                    total_wells
+                )
+
+
+            with col3:
+
+                st.metric(
+                    "📏 Avg Depth",
+                    f"{avg_depth:.1f}"
+                    if pd.notna(avg_depth)
+                    else "N/A"
+                )
+
+
+            with col4:
+
+                st.metric(
+                    "⚙️ Avg ROP",
+                    f"{avg_rop:.1f}"
+                    if pd.notna(avg_rop)
+                    else "N/A"
+                )
+
+
+            # ================================================
+            # DATABASE RECORDS
+            # ================================================
+
+            st.markdown(
+                "### 📊 Stored WCR Records"
             )
-
-
-        # ====================================================
-        # DATABASE RECORDS
-        # ====================================================
-
-        st.markdown(
-            "### 📊 Stored WCR Records"
-        )
-
-        st.dataframe(
-            db_df,
-            use_container_width=True,
-            hide_index=True
-        )
-
-
-        # ====================================================
-        # DRILLING PARAMETERS
-        # ====================================================
-
-        st.markdown(
-            "### ⚙️ Drilling Parameters"
-        )
-
-        parameter_columns = [
-            "well_id",
-            "well_name",
-            "operator",
-            "location",
-            "drilling_date",
-            "total_depth",
-            "formation",
-            "rop",
-            "wob",
-            "rpm",
-            "torque",
-            "mud_weight",
-            "risk_level"
-        ]
-
-
-        available_columns = [
-            column
-            for column in parameter_columns
-            if column in db_df.columns
-        ]
-
-
-        if available_columns:
 
             st.dataframe(
-                db_df[
-                    available_columns
-                ],
+                db_df,
                 use_container_width=True,
                 hide_index=True
             )
 
 
-    else:
+            # ================================================
+            # DRILLING PARAMETERS
+            # ================================================
 
-        st.info(
-            "No WCR records found in Supabase."
+            st.markdown(
+                "### ⚙️ Drilling Parameters"
+            )
+
+            parameter_columns = [
+                "well_id",
+                "well_name",
+                "operator",
+                "location",
+                "drilling_date",
+                "total_depth",
+                "formation",
+                "rop",
+                "wob",
+                "rpm",
+                "torque",
+                "mud_weight",
+                "risk_level"
+            ]
+
+
+            available_columns = [
+                column
+                for column in parameter_columns
+                if column in db_df.columns
+            ]
+
+
+            if available_columns:
+
+                st.dataframe(
+                    db_df[
+                        available_columns
+                    ],
+                    use_container_width=True,
+                    hide_index=True
+                )
+
+
+        else:
+
+            st.info(
+                "No WCR records found in Supabase."
+            )
+
+
+    except Exception as e:
+
+        st.error(
+            f"Unable to read Supabase records: {e}"
         )
 
+else:
 
-except Exception as e:
-
-    st.error(
-        f"Unable to read Supabase records: {e}"
+    st.info(
+        "Process a WCR report above to see the stored database records here."
     )
 
 
@@ -888,121 +757,35 @@ with module_col2:
 
 
 # ============================================================
-# SECTION 6 - END-TO-END ARCHITECTURE
+# SECTION 6 - DEPTH RISK EXPLORER
+# (simulated preview of the planned risk engine)
 # ============================================================
 
 ui.section(
-    "🔄 6. End-to-End NWIS Architecture"
+    "🎯 6. Depth Risk Explorer",
+    "Preview of the planned risk engine. Values here are simulated, not model output."
 )
 
-st.markdown(
-    """
-    <div style="
-        background:rgba(255,255,255,0.95);
-        padding:24px;
-        border-radius:18px;
-        border:1px solid #D9E2EC;
-        box-shadow:0 5px 18px rgba(0,0,0,0.06);
-    ">
-
-        <div style="
-            display:flex;
-            flex-wrap:wrap;
-            align-items:center;
-            justify-content:center;
-            gap:10px;
-            font-size:15px;
-            font-weight:700;
-        ">
-
-            <span style="
-                background:#E8F1F8;
-                color:#102A43;
-                padding:12px 18px;
-                border-radius:10px;
-            ">
-                📄 WCR / DDR
-            </span>
-
-            <span style="color:#F15A29;">→</span>
-
-            <span style="
-                background:#E8F8F9;
-                color:#102A43;
-                padding:12px 18px;
-                border-radius:10px;
-            ">
-                🔍 OCR / Text
-            </span>
-
-            <span style="color:#F15A29;">→</span>
-
-            <span style="
-                background:#E8F8F9;
-                color:#102A43;
-                padding:12px 18px;
-                border-radius:10px;
-            ">
-                🧠 NLP
-            </span>
-
-            <span style="color:#F15A29;">→</span>
-
-            <span style="
-                background:#E8F1F8;
-                color:#102A43;
-                padding:12px 18px;
-                border-radius:10px;
-            ">
-                🗃️ PostgreSQL
-            </span>
-
-            <span style="color:#F15A29;">→</span>
-
-            <span style="
-                background:#FFF1EA;
-                color:#102A43;
-                padding:12px 18px;
-                border-radius:10px;
-            ">
-                📊 NWIS Dashboard
-            </span>
-
-        </div>
-
-        <hr style="
-            border:none;
-            border-top:1px solid #D9E2EC;
-            margin:24px 0;
-        ">
-
-        <div style="
-            text-align:center;
-            color:#627D98;
-            line-height:1.8;
-        ">
-            <b style="color:#102A43;">
-                Future intelligence layer:
-            </b>
-            Similar Wells →
-            eRTMAC →
-            Risk Prediction →
-            Recommendations →
-            GIS
-        </div>
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+ui.explorer_component()
 
 
 # ============================================================
-# SECTION 7 - PROTOTYPE STATUS
+# SECTION 7 - END-TO-END ARCHITECTURE
 # ============================================================
 
 ui.section(
-    "📌 7. Prototype Status"
+    "🔄 7. End-to-End NWIS Architecture"
+)
+
+ui.pipeline_component()
+
+
+# ============================================================
+# SECTION 8 - PROTOTYPE STATUS
+# ============================================================
+
+ui.section(
+    "📌 8. Prototype Status"
 )
 
 status_col1, status_col2, status_col3 = st.columns(
@@ -1047,7 +830,5 @@ with status_col3:
 # ============================================================
 # FOOTER
 # ============================================================
-
-st.divider()
 
 ui.footer()
