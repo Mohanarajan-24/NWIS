@@ -237,28 +237,30 @@ if uploaded_file:
             )
 
 
-        # ====================================================
+              # ====================================================
         # SECTION 3 - STRUCTURED DATA
         # ====================================================
 
         ui.section("🧠 3. NLP Extracted Structured Data")
 
-    display_data = pd.DataFrame(
-    list(data.items()),
-    columns=[
-        "Field",
-        "Extracted Value"
-    ]
-)
+        display_data = pd.DataFrame(
+            list(data.items()),
+            columns=[
+                "Field",
+                "Extracted Value"
+            ]
+        )
 
-# Convert mixed values to text for safe Streamlit display
-display_data["Extracted Value"] = display_data["Extracted Value"].astype(str)
+        # Convert mixed values to text for safe Streamlit display
+        display_data["Extracted Value"] = (
+            display_data["Extracted Value"].astype(str)
+        )
 
-st.dataframe(
-    display_data,
-    use_container_width=True,
-    hide_index=True
-)
+        st.dataframe(
+            display_data,
+            use_container_width=True,
+            hide_index=True
+        )
 
 
 # ============================================================
